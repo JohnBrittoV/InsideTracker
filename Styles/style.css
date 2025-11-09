@@ -277,7 +277,30 @@ body{
     box-shadow: 0 6px 15px rgba(108, 99, 255, 0.4);
 }
 
-.google-auth-btn{
+.divider{
+    text-align: center;
+    margin: 25px 0;
+    position: relative;
+    color: #718096;
+}
+
+.divider::before{
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #E3E8F0;
+}
+
+.divider span{
+    background: var(--card-bg);
+    padding: 0 15px;
+    position: relative;
+}
+
+.google-auth-btn, .github-btn{
     width: 100%;
     padding: 14px;
     border: 2px solid #E2E8F0;
@@ -296,7 +319,7 @@ body{
     color: #5F6368;
 }
 
-.google-auth-btn:hover{
+.google-auth-btn:hover, .social-btn:hover{
     transform: translateY(-2px);
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
     background-color: #F8F9FA;
@@ -307,6 +330,22 @@ body{
     color: #DB4437;
     font-size: 1.1rem;
 }
+/* 
+.social-btn{
+    flex:1;
+    padding: 14px;
+    border: 2px solid #E2E8F0;
+    border-radius: 12px;
+    background: var(--light);
+    color: var(--dark);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+} */
 
 .footer{
     text-align: center;
