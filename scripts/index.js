@@ -75,3 +75,17 @@ function showSuccess(message) {
 function hideSuccess() {
     document.getElementById('success-message').classList.remove('active');
 }
+
+function googleAuth(){
+     showSuccess('Redirecting to Google authentication...');
+
+     setTimeout(() => {
+        showDashboard();
+     }, 1500);
+}
+
+function showDashboard(){
+    document.querySelector('.auth-card').style.display = 'none';
+    document.querySelector('.footer').style.display = 'none';
+    document.getElementById('dashboard').classList.add('active');
+}
