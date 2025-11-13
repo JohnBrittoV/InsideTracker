@@ -69,7 +69,7 @@
                 </div>
             
                 <!-- Login to Dashboard -->
-                <button class="auth-btn btn-primary" onclick="login()">
+                <button class="auth-btn btn-primary" id="loginBtn" onclick="login()">
                     <i class="fas fa-sign-in-alt"></i> Login to Dashboard
                 </button>
 
@@ -78,13 +78,13 @@
                 </div>
 
                 <!-- Google Auth Button -->
-                <button class="google-auth-btn" onclick="googleAuth()">
+                <button class="google-auth-btn" id="googleBtn" onclick="googleAuth()">
                     <i class="fab fa-google"></i>
                     Google
                 </button>
 
                 <!-- Github Login -->
-                <button class="social-btn github-btn">
+                <button class="social-btn github-btn" id="gitBtn">
                     <i class="fab fa-github"></i>
                     GitHub
                 </button>
@@ -145,7 +145,7 @@
                     </div>
                 </div>
 
-                <button class="auth-btn btn-primary" onclick="register()">
+                <button class="auth-btn btn-primary" id="createAccountBtn"  onclick="register()">
                     <i class="fas fa-user-plus"></i>
                     Create Account
                 </button>
@@ -154,13 +154,13 @@
                     <span>Or continue with</span>
                 </div>
 
-                <button class="google-auth-btn" onclick="googleAuth()">
+                <button class="google-auth-btn" id="regGoogleBtn" onclick="googleAuth()">
                     <i class="fab fa-google"></i>
                     Google
                 </button>
 
                 <!-- Github Login -->
-                <button class="social-btn github-btn">
+                <button class="social-btn github-btn" id="regGitBtn">
                     <i class="fab fa-github"></i>
                     GitHub
                 </button>
@@ -183,7 +183,7 @@
 
         <div class="container">
             <!-- Main dashboard from here -->
-            <div class="dashboard-container">
+            <div class="dashboard-container" id="dash-container">
                 <div class="dashboard-header">
                     <div class="header-content">
                         <div class="profile-section">
@@ -278,7 +278,7 @@
 
                                 <div class="stat-card">
                                     <div class="stat-icon" style="background: var(--primary);">
-                                        <i class="fas fa-calender-day"></i>
+                                        <i class="fas fa-calendar-day"></i>
                                     </div>
                                     <div class="stat-info">
                                         <h3>Total Days</h3>
@@ -292,7 +292,7 @@
                                         <i class="fas fa-fire"></i>
                                     </div>
                                     <div class="stat-info">
-                                        <h1>Current Streak</h1>
+                                        <h3>Current Streak</h3>
                                         <div class="stat-value">12</div>
                                         <div class="stat-change positive">+3 days</div>
                                     </div>
@@ -331,15 +331,15 @@
                                         <i class="fas fa-running"></i>
                                         Active Time
                                     </div>
-                                    <div class="time-value">
+                                    <div class="time-value active-time">
                                         <span class="current-time">03:55:45</span>
                                     </div>
                                 </div>
 
-                                <div class="line-item total-item">
+                                <div class="time-row code-time">
                                     <div class="line-label">
                                         <i class="fas fa-code"></i>
-                                        Lines Written
+                                        Total Lines
                                     </div>
                                     <div class="time-value">520</div>
                                 </div>
@@ -348,14 +348,14 @@
                             <!-- Weekly Summary -->
                             <div class="section">
                                 <div class="section-header">
-                                    <i class="fas fa-calender-week"></i>
+                                    <i class="fas fa-calendar-week"></i>
                                     <h2>Weekly Summary</h2>
                                 </div>
 
                                 <div class="time-row">
                                     <div class="time-label">
                                         <i class="fas fa-chart-line"></i>
-                                        Total Focus Time
+                                        Total Focus 
                                     </div>
                                     <div class="time-value">12:45:30</div>
                                 </div>
@@ -363,7 +363,15 @@
                                 <div class="time-row">
                                     <div class="time-label">
                                         <i class="fas fa-laptop-code"></i>
-                                        Total Code Time
+                                        Total Code 
+                                    </div>
+                                    <div class="time-value">08:04:20</div>
+                                </div>
+
+                                <div class="time-row">
+                                    <div class="time-label">
+                                        <i class="fas fa-running"></i>
+                                        Total Active 
                                     </div>
                                     <div class="time-value">08:04:20</div>
                                 </div>
@@ -373,22 +381,22 @@
                                         <i class="fas fa-code"></i>
                                         Total Lines
                                     </div>
-                                    <div class="time-value">3,450</div>
+                                    <div class="time-value">23,450</div>
                                 </div>
 
                                 <div class="time-row">
-                                    <div class="time-label">
+                                    <div class="time-label" style="word-break: break-word;">
                                         <i class="fas fa-trophy"></i>
-                                        Most Productive Day
+                                        Perform Day
                                     </div>
-                                    <div class="time-value">Wednesday</div>
+                                    <div class="time-value">Wed</div>
                                 </div>
                             </div>
 
                             <!-- Monthly Summary -->
                             <div class="section">
                                 <div class="section-header">
-                                    <i class="fas fa-calender-alt"></i>
+                                    <i class="fas fa-calendar-alt"></i>
                                     <h2>Monthly Summary</h2>
                                 </div>
 
@@ -431,7 +439,7 @@
                             <div class="section">
                                 <div class="section-header">
                                     <i class="fas fa-edit"></i>
-                                    <h2>Update Your Progress</h2>
+                                    <h2>Update Progress</h2>
                                 </div>
 
                                 <!-- Date Input -->
@@ -453,16 +461,16 @@
                                         <i class="fas fa-tachometer-alt"></i>
                                         Typing Speed (WPM)
                                     </label>
-                                    <input type="number" id="typing-speed" placeholder="44" min="0" max="200">
+                                    <input type="number" id="typing-speed" placeholder="60" min="0" max="200">
                                 </div>
 
                                 <!-- Keyboard coverage -->
                                 <div class="input-group">
                                     <label for="keyboard-coverage">
                                         <i class="fas fa-keyboard"></i>
-                                        Keyboard Coverage(%)
+                                        Keyboard Coverage (%)
                                     </label>
-                                    <input type="number" id="keyboard-coverage" placeholder="62" min="0" max="100">                                
+                                    <input type="number" id="keyboard-coverage" placeholder="99" min="0" max="100">                                
                                 </div>
 
                                 <!-- Focus Time -->
@@ -486,7 +494,7 @@
                                     </label>
 
                                     <div class="time-input">
-                                        <input type="text" id="code-time" placeholder="08:00:00" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]">
+                                        <input type="text" id="code-time" placeholder="10:00:00" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]">
                                         <i class="fas fa-code"></i>
                                     </div>
                                     <div class="time-display" id="code-display">--:--:--</div>
@@ -499,18 +507,18 @@
                                         Active Code Time (HH:MM:SS)
                                     </label>
                                     <div class="time-input">
-                                        <input type="text" id="active-time" placeholder="03:04:30" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]">
+                                        <input type="text" id="active-time" placeholder="08:00:00" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]">
                                         <i class="fas fa-bolt"></i>
                                     </div>
                                     <div class="time-display" id="active-display">--:--:--</div>
                                 </div>
-                            </div>
+                            
+                                <div class="divider"></div>
 
-                            <!-- Line of code section -->
-                            <div class="section">
-                                <div class="section-header">
+                                <!-- Line of code section -->
+                                <div class="section-header" style="margin-top: 40px">
                                     <i class="fas fa-file-code"></i>
-                                    <h2>Lines of Code</h2>
+                                    <h2>Lines of Codes</h2>
                                 </div>
 
                                 <div class="language-grid">
@@ -589,7 +597,7 @@
                                     </h3>
                                     <div class="total-value" id="total-lines">0</div>
                                 </div>
-                            </div>
+                            
 
                             <!-- Button sections -->
                             <div class="buttons">
@@ -603,11 +611,13 @@
                                 </button>
                             </div>
 
+                        </div>
+
                             <!-- Result sections -->
-                            <div class="section" id="results-section">
+                            <div class="section" id="results-section" style="margin-top: 25px;">
                                 <div class="section-header">
                                     <i class="fas fa-chart-bar"></i>
-                                    <h2>Your Coding Session Summary</h2>
+                                    <h2>Coding Summary</h2>
                                 </div>
 
                                 <div class="result-item">
@@ -615,15 +625,15 @@
                                         <i class="fas fa-tachometer-alt"></i>
                                         Typing Speed
                                     </div>
-                                    <div class="result-value" id="result-typing">--WPM</div>
+                                    <div class="result-value" id="result-typing">-- WPM</div>
                                 </div>
 
                                 <div class="result-item">
                                     <div class="result-label">
                                         <i class="fas fa-keyboard"></i>
-                                        Keyboard Coverage
+                                        Key Coverage
                                     </div>
-                                    <div class="result-value" id="result-keyboard">--%</div>
+                                    <div class="result-value" id="result-keyboard">-- %</div>
                                 </div>
 
                                 <div class="result-item">
@@ -645,9 +655,9 @@
                                 <div class="result-item">
                                     <div class="result-label">
                                         <i class="fas fa-running"></i>
-                                        Active Code Time
+                                        Active Time
                                     </div>
-                                    <div class="result-value" id="result-active">--"--:--</div>
+                                    <div class="result-value" id="result-active">--:--:--</div>
                                 </div>
 
                                 <hr style="margin: 20px 0; border: none; height: 2px; background: rgba(108, 99, 255, 0.2);">
@@ -701,13 +711,21 @@
                                     <div class="result-value" id="result-typescript">0</div>
                                 </div>
 
-                                <div class="result-item" style="background: var(--primary); color: white; margin-top: 15px;">
-                                    <div class="result-label" style="color: white;">
+                                <div class="result-item" style="background-color: var(--light); margin-top: 15px;">
+                                    <div class="result-label" style="color: var(--dark)">
                                         <i class="fas fa-layer-group"></i>
                                         Total Lines
                                     </div>
-                                    <div class="result-value" style="color: white;" id="result-total"></div>
+                                    <div class="result-value" style="color: var(--dark);" id="result-total">0</div>
                                 </div>
+
+                                <div class="buttons">
+                                    <button class="btn btn-primary" onclick="submitForm()">
+                                        <i class="fas fa-copy"></i>
+                                        Copy Details
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
 
@@ -720,27 +738,26 @@
                                 </div>
 
                                 <div class="profile-form">
-                                    <div class="form-row">
+                                    <div class="form-row input-group">
                                         <div class="form-group">
                                             <label for="firstName">First Name :</label>
                                             <input type="text" id="firstName" value="John">
                                         </div>
 
-                                        <div class="form-group">
+                                        <div class="form-group input-group">
                                             <label for="lastName">Last Name :</label>
                                             <input type="text" id="lastName" value="Britto">
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="email">Email Address</label>
+                                    <div class="form-group input-group">
+                                        <label for="email">Email Address : </label>
                                         <input type="text" id="email">
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="bio">
-                                            <textarea id="bio" rows="3" style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 10px; font-size: 1rem; transition: all 0.3s ease; background: var(--light); ">Full-stack developer passionate about creating efficient and user-friendly applications.</textarea>
-                                        </label>
+                                    <div class="form-group input-group">
+                                        <label for="bio">Bio :</label>
+                                            <textarea id="bio" rows="3" style="width: 100%; padding: 14px 16px; border: 2px solid #E2E8F0; border-radius: 10px; font-size: 1rem; transition: all 0.3s ease; background: var(--light); "></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -796,7 +813,7 @@
                             </div>
                         </div>
 
-                        <div class="buttons">
+                        <!-- <div class="buttons">
                             <button class="btn btn-primary">
                                 <i class="fas fa-save"></i>
                                 Save Changes
@@ -805,7 +822,7 @@
                                 <i class="fas fa-sign-out-alt"></i>
                                 Logout
                             </button>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Analytics Page -->
@@ -854,12 +871,13 @@
                 </div>
 
             <!-- Footer -->
-            <div class="footer">
+            <div class="footer" style="display: none">
                 <p>Code Time Tracker &copy; <span id="time">2025</span> | Track your development progress efficiently </p>
             </div>
         </div>
     </div>
-    
+         
     <script src="scripts/index.js"></script>
+    <script type="module" src="scripts/firebase.js"></script>
 </body>
 </html>
