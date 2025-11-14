@@ -164,3 +164,24 @@ document.querySelectorAll('#focus-time, #code-time, #active-time').forEach(input
         }
     });
 });
+
+
+// Attendance selection 
+let selectedAttendance = null;
+document.querySelectorAll('.attendance-option').forEach(option => {
+    option.addEventListener('click', function() {
+        // Remove selected class from all options
+        document.querySelectorAll('.attendance-option').forEach(opt => {
+            opt.classList.remove('selected');
+        }) ;
+
+        // Select for current
+        this.classList.add('selected');
+        selectedAttendance = this.getAttribute('data-value');
+    });
+});
+
+// after submitting the result value display to the summary
+// document.getElementById('result-attendance').textContent = 
+// selectedAttendance ? selectedAttendance.charAt(0).toUpperCase() + 
+// selectedAttendance.slice(1) : '--';
