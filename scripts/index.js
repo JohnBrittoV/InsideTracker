@@ -161,7 +161,6 @@ loginBtn.addEventListener('click', async function() {
 createAccountBtn.addEventListener('click', function() {
 
     console.log('Registration process started');
-
     const regName = regNameInput.value;
     const regEmail = regEmailInput.value;
     const regPassword = regPasswordInput.value;
@@ -206,57 +205,75 @@ createAccountBtn.addEventListener('click', function() {
  
             profileAvatarLink = e.target.result;
             // function call to create user
-            createUserAccount();
+            createUserAccount(profileAvatarLink);
         };
         reader.readAsDataURL(avatar);
     }
     else{
         console.log('Created without profile avatar');
-        createUserAccount();
-    }
-
-    function createUserAccount(){
-        
-        createUserWithEmailAndPassword(auth, regEmail, regPassword)
-        .then((userCredential) => {
-            // Signed up 
-            const user = userCredential.user;
-            const uid = user.uid;
-
-            return set(dbRef(database, uid + "/users/" ),{
-                uid: uid,
-                username: regName,
-                userEmail: regEmail,
-                avatar: profileAvatarLink,
-                createdAt: new Date().toISOString()
-            }).then(() => {
-                console.log(uid, regEmail, regName);
-                
-                // Save to local storage
-                localStorage.setItem('userLoggedIn', true);
-                localStorage.setItem('userEmail', regEmail);
-                localStorage.setItem('userName', regName);
-                localStorage.setItem('userProfile', avatar);
-                localStorage.setItem('userId', uid);
-
-                showSuccess('Account created successfully!');
-                setTimeout(() => {
-                    // Show success message and switch to dashboard
-                    console.log(uid, regEmail, regName);
-                    showDashboard();
-                }, 1500); 
-            });
-        })
-            .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.error(errorCode);
-            console.log(errorMessage);
-            showError(error.message);
-        });
+        createUserAccount(profileAvatarLink);
     }
     
-});
+    // firebase user creation activities
+    async function createUserAccount(avatarLink){
+        try{
+            let databaseStored;
+            // Create Authentication
+            const userCredential = await createUserWithEmailAndPassword(auth, regEmail, regPassword);
+            const user = userCredential.user;
+
+            // Store in firebase realtime database
+            databaseStored = await storedUserData(user, avatarLink);
+
+            // Save data in local storage for later use
+            storeLocalData(user, avatarLink);
+
+            if(databaseStored){
+                showSuccess('Account created successfully!');
+            }
+            else{
+                showSuccess('Account created! Please complete your profile setup.');
+            }
+
+            // Show Dashboard
+            setTimeout(() => showDashboard(), 1500);
+        }
+        catch(error){
+            showError(error.message);
+            console.Error(error.Code);
+            console.Error(error.message);
+        }
+    }
+
+    // Store user data in firebase
+    async function storedUserData(user, avatarLink){
+        try{
+            await set(dbRef(database, `${user.uid}/users/`), {
+                uid: user.uid,
+                username: regName,
+                userEmail: regEmail,
+                avatar: avatarLink,
+                createdAt: new Date().toISOString()
+            });
+            // return value boolean used to check later
+            return true;
+        }
+        catch(error){
+            console.warn('Firebase storage failed:', error);
+            return false;
+        }
+    }
+
+    // Store user data in Local Database
+    function storeLocalData(user, avatarLink){
+        localStorage.setItem('userLoggedIn', 'true');
+        localStorage.setItem('userEmail', regEmail);
+        localStorage.setItem('userName', regName);
+        localStorage.setItem('userProfile', avatarLink);
+        localStorage.setItem('userId', user.uid);
+    }
+
+})
     
 // Show error message
 function showError(message) {
