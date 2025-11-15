@@ -417,7 +417,7 @@ body{
     margin-top: 15px;
 }
 
-.stat-item{
+/* .stat-item{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -427,7 +427,7 @@ body{
     border-radius: 10px;
     font-weight: 500;
     font-size: 0.9rem;
-}
+} */
 
 .stat-item i{
     color: var(--primary);
@@ -559,7 +559,8 @@ body{
 
 .header-icon{
     font-size: 2.5rem;
-    opacity: 0.9;
+    opacity: 0.2;
+    margin-left: 10px;
 }
 
 .stats-row{
@@ -592,13 +593,14 @@ body{
 /* Navigation bar */
 .nav-container{
     background: white;
-    padding: 15px;
-    border-radius: 1px solid rgba(0,0,0,0.05);
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .nav-links {
     display: flex;
     justify-content: space-between;
+    gap: 10px;
     overflow-x: auto;
     padding-bottom: 5px;
 }
@@ -651,7 +653,7 @@ body{
 
 .stats-grid{
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: 15px;
     margin-bottom: 20px;
 }
@@ -674,8 +676,8 @@ body{
 }
 
 .stat-icon{
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -962,6 +964,54 @@ body{
     pointer-events: none;
 }
 
+.attendance-options{
+    display: flex;
+    gap: 7px;
+    margin-top: 8px;
+}
+
+.attendance-option{
+    flex: 1;
+    text-align: center;
+    padding: 12px 8px ;
+    border: solid #E2E8F0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--light);
+    font-weight: 500;
+}
+
+.attendance-option:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-option.selected{
+    border-color: var(--primary);
+    background: rgba(108, 99, 255, 0.1);
+    color: var(--primary);
+}
+
+.present.selected{
+    border-color: var(--success);
+    background: rgba(74, 222, 128, 0.1);
+    color: var(--success);
+}
+
+.absent.selected{
+    border-color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.holiday.selected{
+    border-color: var(--warning);
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+
 .time-display {
     text-align: center;
     padding: 12px;
@@ -1201,9 +1251,6 @@ body{
 }
 
 
-
-
-
 @keyframes shake{
     0%, 100% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
@@ -1228,5 +1275,136 @@ body{
     .logo {
         margin-right: 0;
         margin-bottom: 15px;
+    }
+}
+
+@media (min-width: 475px){
+    .dashboard-container{
+        max-width: 457px;
+        margin: 20px auto;
+    }
+
+    .header{
+        padding: 30px 25px;
+    }
+
+    .profile-imgs{
+        width: 70px;
+        height: 70px;
+    }
+
+    .profile-info p{
+        font-size: 0.95rem;
+    }
+    .profile-info h2{
+        font-size: 1.4rem;
+    }
+    .header-icon{
+        font-size: 3rem;
+        opacity: 0.1;
+    }
+    .stats-row{
+        gap: 20px;
+    }
+    .stat-value{
+        font-size: 1.5rem;
+    }
+    .stat-label{
+        font-size: 0.9rem;
+    }
+
+    .nav-container{
+        padding: 20px;
+    }
+    .nav-item{
+        padding: 12px 20px;
+    }
+    .nav-item i{
+        font-size: 1.5rem;
+    }
+    .nav-item span{
+        font-size: 0.85rem;
+    }
+    
+    .main-content{
+        padding: 25px;
+    }
+    .stats-grid{
+        gap: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        margin-bottom: 20px;
+    }
+    .stat-card{
+        padding: 25px;
+    }
+    .stat-icon{
+        width: 60px;
+    }
+    .stat-info h3{
+        font-size: 1rem;
+    }
+    .stat-value{
+        font-size: 1.8rem;
+    }
+
+    .section {
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+    .section-header{
+        margin-bottom: 25px;
+    }
+    .section-header i {
+        width: 50px;
+        height: 50px;
+    }
+    .section-header h2{
+        font-size: 1.5rem;
+    }
+
+    .input-group{
+        margin-bottom: 20px;
+    }
+    .input-group label{
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+    .input-group input, .input-group select{
+        padding: 16px 20px;
+        font-size: 1.1rem;
+    }
+
+    .attendance-options{
+        gap: 15px;
+    }
+    .attendance-option{
+        padding: 15px 10px;
+        font-size: 1rem;
+    }
+
+    .language-icon{
+        width: 32px;
+        height: 32px;
+        font-size: 1.1rem;
+    }
+
+    .btn{
+        padding: 16px 25px;
+        font-size: 1.1rem;
+    }
+
+    .time-display{
+        padding: 14px;
+        font-size: 1.2rem;
+    }
+    .result-item{
+        padding: 15px 20px;
+    }
+    .result-label{
+        font-size: 1.1rem;
+    }
+    .result-value{
+        font-size: 1.2rem;
     }
 }

@@ -62,14 +62,14 @@
                     </label>
                     <div class="password-input">
                         <input type="password" id="login-password" placeholder="Enter your password">
-                        <button type="button" class="password-toggle" onclick="togglePassword('login-password')">
+                        <button type="button" class="password-toggle" data-id="login-password">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
             
                 <!-- Login to Dashboard -->
-                <button class="auth-btn btn-primary" id="loginBtn" onclick="login()">
+                <button class="auth-btn btn-primary" id="loginBtn">
                     <i class="fas fa-sign-in-alt"></i> Login to Dashboard
                 </button>
 
@@ -78,7 +78,7 @@
                 </div>
 
                 <!-- Google Auth Button -->
-                <button class="google-auth-btn" id="googleBtn" onclick="googleAuth()">
+                <button class="google-auth-btn" id="googleBtn">
                     <i class="fab fa-google"></i>
                     Google
                 </button>
@@ -126,7 +126,7 @@
                     </label>
                     <div class="password-input">
                         <input type="password" id="register-password" placeholder="Create a password">
-                        <button type="button" class="password-toggle" onclick="togglePassword('register-password')">
+                        <button type="button" class="password-toggle" data-id="register-password">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
@@ -139,13 +139,13 @@
                     </label>
                     <div class="password-input">
                         <input type="password" id="register-confirm-password" placeholder="Confirm Password">
-                        <button type="button" class="password-toggle" onclick="togglePassword('register-confirm-password')">
+                        <button type="button" class="password-toggle" data-id="register-confirm-password">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
 
-                <button class="auth-btn btn-primary" id="createAccountBtn"  onclick="register()">
+                <button class="auth-btn btn-primary" id="createAccountBtn">
                     <i class="fas fa-user-plus"></i>
                     Create Account
                 </button>
@@ -187,10 +187,10 @@
                 <div class="dashboard-header">
                     <div class="header-content">
                         <div class="profile-section">
-                            <img class="profile-imgs" alt="Profile-Photo" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80">
+                            <img class="profile-imgs" alt="Profile-Photo" id="profile-photo" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=200&q=80">
                             <div class="profile-info">
-                                <h2>John Britto </h2>
-                                <p>johnbritto95@gmail.com</p>
+                                <h2 id="profile-info-title"> Developer Name </h2>
+                                <p id="profile-info-email">username@gmail.com</p>
                             </div>
                         </div>
                         
@@ -206,17 +206,17 @@
                             </div>
 
                             <div class="stat-item">
-                                <div class="stat-value">145:30</div>
+                                <div class="stat-value">145 : 30</div>
                                 <div class="stat-label">Focus Time</div>
                             </div>
 
                             <div class="stat-item">
-                                <div class="stat-value">185:20</div>
+                                <div class="stat-value">185 : 20</div>
                                 <div class="stat-label">Active Time</div>
                             </div>
 
                             <div class="stat-item">
-                                <div class="stat-value">210:45</div>
+                                <div class="stat-value">210 : 45</div>
                                 <div class="stat-label">Code Time</div>
                             </div>
                     </div>
@@ -233,7 +233,12 @@
 
                         <div class="nav-item" data-page="time-tracker">
                             <i class="fas fa-clock"></i>
-                            <span>Time Tracker</span>
+                            <span>Tracker</span>
+                        </div>
+
+                        <div class="nav-item" data-page="analytics">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Analytics</span>
                         </div>
 
                         <div class="nav-item" data-page="profile">
@@ -241,10 +246,7 @@
                             <span>Profile</span>
                         </div>
 
-                        <div class="nav-item" data-page="analytics">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>Analytics</span>
-                        </div>
+                        
 
                     </div>
                 </div>
@@ -455,6 +457,28 @@
                                     </div>
                                 </div>
 
+                                <!-- Attendance Status  -->
+                                <div class="input-group">
+                                    <label>
+                                        <i class="fas fa-user-check"></i>
+                                        Attendance Status
+                                    </label>
+                                    <div class="attendance-options">
+                                        <div class="attendance-option present" data-value="present">
+                                            <i class="fas fa-check-circle"></i>
+                                            Present
+                                        </div>
+                                        <div class="attendance-option absent" data-value="absent">
+                                            <i class="fas fa-times-circle"></i>
+                                            Absent
+                                        </div>
+                                        <div class="attendance-option holiday" data-value="holiday">
+                                            <i class="fas fa-umbrella-beach"></i>
+                                            Holiday
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Typing speed input -->
                                 <div class="input-group">
                                     <label for="typing-speed">
@@ -618,6 +642,22 @@
                                 <div class="section-header">
                                     <i class="fas fa-chart-bar"></i>
                                     <h2>Coding Summary</h2>
+                                </div>
+
+                                <div class="result-item">
+                                    <div class="result-label">
+                                        <i class="far fa-calendar-alt"></i>
+                                        Date
+                                    </div>
+                                    <div class="result-value" id="result-date">--</div>
+                                </div>
+
+                                <div class="result-item">
+                                    <div class="result-label">
+                                        <i class="fas fa-user-check"></i>
+                                        Attendance
+                                    </div>
+                                    <div class="result-value" id="result-attendance">--</div>
                                 </div>
 
                                 <div class="result-item">
@@ -877,7 +917,7 @@
         </div>
     </div>
          
-    <script src="scripts/index.js"></script>
+    <script type="module" src="scripts/index.js"></script>
     <script type="module" src="scripts/firebase.js"></script>
 </body>
 </html>
