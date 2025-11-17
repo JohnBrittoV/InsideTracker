@@ -5,7 +5,8 @@
     import { 
         getAuth, 
         signInWithEmailAndPassword,
-        createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        createUserWithEmailAndPassword,
+        fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
     import{
         getDatabase,
@@ -38,6 +39,7 @@
         auth,
         createUserWithEmailAndPassword,
         signInWithEmailAndPassword,
+        fetchSignInMethodsForEmail,
         database,
         dbRef,
         set,

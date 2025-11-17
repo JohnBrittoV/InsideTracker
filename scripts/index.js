@@ -2,6 +2,7 @@ import{
     auth, database,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    fetchSignInMethodsForEmail,
     dbRef,
     set,
     get
@@ -123,10 +124,15 @@ loginBtn.addEventListener('click', async function() {
 
     clearLoginFields();
     console.log('All login validations Passed');
-
     showLoading('Sigining you in...', 'dots');
 
     try {
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        if(methods.length === 0){
+            hideLoading();
+            return showError('No account found. Create a new account');
+        }
+
         // Login with firebase 
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
@@ -158,16 +164,14 @@ loginBtn.addEventListener('click', async function() {
             showDashboard();
         }
         else {
-            showError('User data not found');
+            showError('User data not found. Create account to contioue');
         }
     }
     catch(error){
         hideLoading();
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(errorCode);
-        console.log(errorMessage);
-        showError('Login failed:' +error.message);    
+        const displayError = handleAuthError(error);    
+        console.error('Login failed:' + error.code, error.message);
+        showError(displayError);    
     }                                                                                                           
 });
 
@@ -298,9 +302,9 @@ createAccountBtn.addEventListener('click', function() {
         }
         catch(error){
             hideLoading();
-            showError(error.message);
-            console.Error(error.Code);
-            console.Error(error.message);
+            const ErrorDisplayFunction = handleAuthError(error);
+            showError(ErrorDisplayFunction);
+            console.Error(`Registraion error:`+ error.Code, error.message);
         }
     }
 
@@ -367,6 +371,34 @@ createAccountBtn.addEventListener('click', function() {
             this.classList.remove('field-error');
         });
     });
+
+// Common error handling for register & login
+function handleAuthError(error){
+    if(error.code === 'auth/invalid-credential'){
+        return 'Invalid credentials';
+    }
+    else if(error.code === 'auth/email-already-in-use'){
+        return 'This email is already registered. Please try login.';
+    }
+    else if(error.code === 'auth/weak-password'){
+        return 'Password should be at least 6 characters.';
+    }
+    else if(error.code === 'auth/invalid-email'){
+        return 'Please enter a valid email address';
+    }
+    else if(error.code === 'auth/network-request-failed'){
+        return 'No internet connection. Please check your network.';
+    }
+    else if(error.message.includes('Network Error') || error.message.includes('Failed to fetch')){
+        return 'Network error. Please check your connection.';
+    }
+    else if(error.code == 'auth/too-many-requests'){
+        return 'Too many attempts. Please try again later.';
+    }
+    else {
+        return 'Something went wrong. Please try again.';
+    }
+}
 
 // Show error message
 function showError(message) {
