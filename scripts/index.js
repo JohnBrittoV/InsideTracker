@@ -102,23 +102,36 @@ loginBtn.addEventListener('click', async function() {
     const email = emailInput.value;
     const password = passwordInput.value;
 
+    hideError();
+
     if(!email || !password){
         console.log('Missing fields');
         showError('Please fill all the fields');
+
+        // Highlight empty fields
+        if(!email) emailInput.classList.add('field-error');
+        if(!password) passwordInput.classList.add('field-error');
         return;
     }
 
     if(!email.includes('@')){
         console.log('Enter valid Email');
         showError('Please Enter valid Email');
+        emailInput.classList.add('field-error');
         return;
     }
+
+    clearLoginFields();
+    console.log('All login validations Passed');
+
+    showLoading('Sigining you in...', 'dots');
 
     try {
         // Login with firebase 
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-
+        updateLoadingMessage('Verifying your account...');
+        
         // Get user data from firebase database
         const userReference = dbRef(database, user.uid + '/users/' );
         const snapshot = await get(userReference);
@@ -126,6 +139,7 @@ loginBtn.addEventListener('click', async function() {
         if(snapshot.exists()){
             const userData = snapshot.val();
             console.log(userData);
+            updateLoadingMessage('Loading your dashboard...');
 
             // save data to local Storage
             localStorage.setItem('userLoggedIn', true);
@@ -139,16 +153,16 @@ loginBtn.addEventListener('click', async function() {
             profileEmail.textContent = userData.userEmail;
             profileIcon.src = userData.avatar;
             
+            updateLoadingMessage('Welcome back!');
             // Hide and show items
-            document.querySelector('.auth-card').style.display = 'none';
-            document.querySelector('.footer').style.display = 'none';
-            document.getElementById('dash-container').style.display = 'block';
+            showDashboard();
         }
         else {
             showError('User data not found');
         }
     }
     catch(error){
+        hideLoading();
         const errorCode = error.code;
         const errorMessage = error.message;
         console.error(errorCode);
@@ -167,50 +181,88 @@ createAccountBtn.addEventListener('click', function() {
     const regConfirm = regConfirmPassword.value;
     const avatar = pictureUpload.files[0];
 
+    // clear previous errors
+    hideError();
+
     // input validations
     if(!regName || !regEmail || !regPassword || !regConfirm){
         console.log('Missing fields');
         showError('Please fill all the fields');
+
+        // Highlight the fields
+        if(!regName) regNameInput.classList.add('field-error');
+        if(!regEmail) regEmailInput.classList.add('field-error');
+        if(!regPassword) regPasswordInput.classList.add('field-error');
+        if(!regConfirm) regConfirmPassword.classList.add('field-error');
+
         return;
     }
 
     if(regName.length < 4 || regName.length > 15){
         showError('User Name must be valid length min: 4 max: 15');
+        regNameInput.classList.add('field-error');
         return;
     }
 
     if(!regEmail.includes('@')){
         console.log('Invalid Email');
         showError('Invalid Email');
+        regEmailInput.classList.add('field-error');
         return;
     }
 
     if(regPassword.length < 6){
         showError('Password must be atleast 6 characters');
+        regPasswordInput.classList.add('field-error');
         return;
     }
 
     if(regPassword !== regConfirm){
         showError('Passwords do not match');
+        regPasswordInput.classList.add('field-error');
+        regConfirmPassword.classList.add('field-error');
         return;
     }
 
-    // check user uploaded a profile picture
+    // check profile picture uploaded or not
+    if(avatar){
+        const maxSize = 200 * 1024;  
+        
+        // Check the image size larger than 200KB
+        if(avatar.size > maxSize){
+            alert('Image size should be less than 200KB');
+            showError('Image size must be less than 200KB');
+            return;
+        }
+
+        // Check file type for security
+        const allowedFileType = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        if(!allowedFileType.includes(avatar.type)){
+            showError('Please select a valid image (PNG, JPEG, GIF)');
+            return;
+        }
+    }
+
+    clearRegistrationFields();
+    console.log('All Registration validation passed');
+    showLoading('Creating your account...', 'spinner');
+
     let profileAvatarLink = baseImageLink;
     if(avatar){
-        console.log('Created with profile avatar');
-        
+        console.log('Processing user uploading Icon');
         const reader = new FileReader();
         reader.onload = function(e){
- 
             profileAvatarLink = e.target.result;
-            // function call to create user
+
+            updateLoadingMessage('Processing profile picture');
+
             createUserAccount(profileAvatarLink);
         };
         reader.readAsDataURL(avatar);
     }
     else{
-        console.log('Created without profile avatar');
+        console.log('No icon selected, using default user icon');
+        profileAvatarLink = 'Images/user-person.png';
         createUserAccount(profileAvatarLink);
     }
     
@@ -218,9 +270,12 @@ createAccountBtn.addEventListener('click', function() {
     async function createUserAccount(avatarLink){
         try{
             let databaseStored;
+            updateLoadingMessage('Creating authentication..');
+
             // Create Authentication
             const userCredential = await createUserWithEmailAndPassword(auth, regEmail, regPassword);
             const user = userCredential.user;
+            updateLoadingMessage('Saving your data..');
 
             // Store in firebase realtime database
             databaseStored = await storedUserData(user, avatarLink);
@@ -228,8 +283,11 @@ createAccountBtn.addEventListener('click', function() {
             // Save data in local storage for later use
             storeLocalData(user, avatarLink);
 
+            // Hide loading when everything is successful
+            hideLoading();
+
             if(databaseStored){
-                showSuccess('Account created successfully!');
+                showSuccess('Account created successfully! 🎉');
             }
             else{
                 showSuccess('Account created! Please complete your profile setup.');
@@ -239,6 +297,7 @@ createAccountBtn.addEventListener('click', function() {
             setTimeout(() => showDashboard(), 1500);
         }
         catch(error){
+            hideLoading();
             showError(error.message);
             console.Error(error.Code);
             console.Error(error.message);
@@ -256,6 +315,7 @@ createAccountBtn.addEventListener('click', function() {
                 createdAt: new Date().toISOString()
             });
             // return value boolean used to check later
+            console.log('Data stored in database');
             return true;
         }
         catch(error){
@@ -271,10 +331,43 @@ createAccountBtn.addEventListener('click', function() {
         localStorage.setItem('userName', regName);
         localStorage.setItem('userProfile', avatarLink);
         localStorage.setItem('userId', user.uid);
+        console.log('User data stored locally');
     }
 
 })
-    
+
+    // Login form clear error highlights
+    function clearLoginFields(){
+        const fields = [emailInput, passwordInput];
+            fields.forEach(items => {
+            items.classList.remove('field-error');
+        });
+    }
+
+    // Login form keyup remove error highlights when type new
+    const loginFields = [emailInput, passwordInput];
+    loginFields.forEach(pass => {
+        pass.addEventListener('input', function(){
+            this.classList.remove('field-error');
+        });
+    });
+
+    // Registrartion form clear error highlights
+    function clearRegistrationFields(){
+    const fields = [regNameInput, regEmailInput, regPasswordInput, regConfirmPassword];
+        fields.forEach(items => {
+            items.classList.remove('field-error');
+        });
+    }
+
+    // Registration form Keyup remove error highlights when type new
+    const registerFields = [regNameInput, regEmailInput, regPasswordInput, regConfirmPassword];
+    registerFields.forEach(item => {
+        item.addEventListener('input', function(){
+            this.classList.remove('field-error');
+        });
+    });
+
 // Show error message
 function showError(message) {
     const errorDiv = document.getElementById('error-message');
@@ -309,6 +402,7 @@ googleBtn.addEventListener('click', function() {
 });
      
 function showDashboard(){
+    hideLoading();
     document.querySelector('header').style.display = 'none';
     document.querySelector('.auth-card').style.display = 'none';
     document.querySelector('.footer').style.display = 'none';
@@ -387,6 +481,44 @@ document.querySelectorAll('#focus-time, #code-time, #active-time').forEach(input
         }
     });
 });
+
+function showLoading(message = 'Processing...', type = 'spinner'){
+    const overlay = document.getElementById('loading-overlay');
+    const text = document.getElementById('loadingText');
+
+    document.getElementById('spinnerLoader').style.display = 'none';
+    document.getElementById('dotsLoader').style.display = 'none';
+    text.textContent = message;
+
+    if(type === 'spinner'){
+        document.getElementById('spinnerLoader').style.display = 'block';
+    }
+    else if(type === 'dots'){
+        document.getElementById('dotsLoader').style.display = 'flex';
+    }
+    overlay.classList.add('active');
+}
+
+function hideLoading(){
+    const overlay = document.getElementById('loading-overlay');
+    overlay.classList.remove('active');
+}
+
+function updateLoadingMessage(message){
+    document.getElementById('loadingText').textContent = message;
+}
+
+function setButtonLoading(button, isLoading){
+    if(isLoading){
+        button.classList.add('btn-loading');
+        button.disabled = true;
+    }
+    else {
+        button.classList.remove('btn-loading');
+        button.disabled = false;
+    }
+}
+
 
 // Check userLogin
 // window.onload = function(){
