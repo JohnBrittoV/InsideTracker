@@ -6,13 +6,18 @@
         getAuth, 
         signInWithEmailAndPassword,
         createUserWithEmailAndPassword,
-        fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        fetchSignInMethodsForEmail,
+        onAuthStateChanged,
+        signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
     import{
         getDatabase,
         ref as dbRef,
         set,
-        get
+        get,
+        onValue,
+        onDisconnect,
+        serverTimestamp,
     } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
     // TODO: Add SDKs for Firebase products that you want to use
@@ -40,10 +45,15 @@
         createUserWithEmailAndPassword,
         signInWithEmailAndPassword,
         fetchSignInMethodsForEmail,
+        onAuthStateChanged,
+        signOut,
         database,
         dbRef,
         set,
-        get
+        get,
+        onValue,
+        onDisconnect,
+        serverTimestamp
     };
 
     console.log("Firebase initialized successfully");
@@ -54,5 +64,15 @@
 
 
 
+   
+   
+
+
+
+
+
+
+
        
+    
     

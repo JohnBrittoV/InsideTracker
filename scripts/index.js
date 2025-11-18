@@ -3,9 +3,14 @@ import{
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     fetchSignInMethodsForEmail,
+    onAuthStateChanged,
+    signOut,
     dbRef,
     set,
-    get
+    get,
+    onValue,
+    onDisconnect,
+    serverTimestamp
 } from "./firebase.js"
 
 // Login 
@@ -17,6 +22,7 @@ const gitBtn = document.getElementById('gitBtn');
 
 // Register
 const pictureUpload = document.getElementById('profile-picture');
+const profileView = document.getElementById('profile-preview');
 const regNameInput = document.getElementById('register-name');
 const regEmailInput = document.getElementById('register-email');
 const regPasswordInput = document.getElementById('register-password');
@@ -29,6 +35,7 @@ const registerGitBtn = document.getElementById('regGitBtn');
 const profileName = document.getElementById('profile-info-title');
 const profileEmail = document.getElementById('profile-info-email');
 const profileIcon = document.getElementById('profile-photo');
+const logoutButton = document.getElementById('logoutBtn');
 
 // Profile icon
 let baseImageLink = "";
@@ -100,7 +107,7 @@ document.querySelectorAll('.password-toggle').forEach(btn => {
 loginBtn.addEventListener('click', async function() {
     console.log('Login process started');
 
-    const email = emailInput.value;
+    const email = emailInput.value.trim().toLowerCase();
     const password = passwordInput.value;
 
     hideError();
@@ -122,27 +129,33 @@ loginBtn.addEventListener('click', async function() {
         return;
     }
 
-    clearLoginFields();
+    console.log(email);
+    //
     console.log('All login validations Passed');
     showLoading('Sigining you in...', 'dots');
 
     try {
         const methods = await fetchSignInMethodsForEmail(auth, email);
+        console.log(auth);
+
         if(methods.length === 0){
             hideLoading();
             return showError('No account found. Create a new account');
         }
-
+        
         // Login with firebase 
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         updateLoadingMessage('Verifying your account...');
         
         // Get user data from firebase database
-        const userReference = dbRef(database, user.uid + '/users/' );
+        const userReference = dbRef(database, `Users/${user.uid}/Profile`);
         const snapshot = await get(userReference);
 
-        if(snapshot.exists()){
+        if(!snapshot.exists()){
+            hideLoading();
+            return showError('User Profile not found. Please create Account');
+        }
             const userData = snapshot.val();
             console.log(userData);
             updateLoadingMessage('Loading your dashboard...');
@@ -161,11 +174,7 @@ loginBtn.addEventListener('click', async function() {
             
             updateLoadingMessage('Welcome back!');
             // Hide and show items
-            showDashboard();
-        }
-        else {
-            showError('User data not found. Create account to contioue');
-        }
+            clearLoginFields();
     }
     catch(error){
         hideLoading();
@@ -297,21 +306,23 @@ createAccountBtn.addEventListener('click', function() {
                 showSuccess('Account created! Please complete your profile setup.');
             }
 
-            // Show Dashboard
-            setTimeout(() => showDashboard(), 1500);
+            setTimeout(() => {
+                hideLoading();
+                setButtonLoading(createAccountBtn, false);
+            } , 1500);
         }
         catch(error){
             hideLoading();
             const ErrorDisplayFunction = handleAuthError(error);
             showError(ErrorDisplayFunction);
-            console.Error(`Registraion error:`+ error.Code, error.message);
+            console.error(`Registraion error:`+ error.Code, error.message);
         }
     }
 
     // Store user data in firebase
     async function storedUserData(user, avatarLink){
         try{
-            await set(dbRef(database, `${user.uid}/users/`), {
+            await set(dbRef(database, `Users/${user.uid}/Profile`), {
                 uid: user.uid,
                 username: regName,
                 userEmail: regEmail,
@@ -551,11 +562,106 @@ function setButtonLoading(button, isLoading){
     }
 }
 
+function clearLocalStorage(){
+    localStorage.removeItem('userLoggedIn');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userProfile');
+    console.log('Local storage cleared');
+}
 
-// Check userLogin
-// window.onload = function(){
-//     // check if user was logged in
-//     if(this.localStorage)
-// }
+function clearAuthForms(){
+    
+    // clear login inputs
+    emailInput.value = "";
+    passwordInput.value = "";
 
+    //clear register inputs
+    regNameInput.value = "";
+    regEmailInput.value = "";
+    regPasswordInput.value = "";
+    regConfirmPassword.value = "";
 
+    //set Profile view to default icon
+    profileView.innerHTML = '<i class="fas fa-user"></i>' ;
+    
+    hideError();
+    hideSuccess();
+}
+
+logoutButton.addEventListener('click', () => {
+    logout();
+})
+
+async function logout(){
+    try{
+        console.log('Logout process started');
+        showLoading('Logging out...', 'dots');
+
+        const userId = localStorage.getItem('userId');
+        
+        if(userId){
+            const userReference = dbRef(database, `Users/${userId}/onlineStatus`);
+            await set(userReference, {
+                isOnline: 'offline',
+                lastLogout: serverTimestamp()
+            });
+        }
+
+        // Signout from firebase Auth
+        await signOut(auth);
+
+        clearLocalStorage();
+        updateLoadingMessage('Logged out successfully!');
+
+        setTimeout(() => {hideLoading();}, 1000);
+    }
+    catch(error){
+        hideLoading();
+        console.log('Logout error :', error);
+        clearLocalStorage();
+    }
+}
+
+onAuthStateChanged(auth, async (user) => {
+    if(user){
+        console.log('User is logged in');
+
+        const profileRef = dbRef(database, `Users/${user.uid}/Profile`);
+        const snapshot = await get(profileRef);
+
+        if(snapshot.exists()){
+            const data = snapshot.val();
+
+            profileName.textContent = data.username;
+            profileEmail.textContent = data.userEmail;
+            profileIcon.src = data.avatar;
+
+            // show dashboard and hide login
+            document.querySelector('header').style.display = 'none';
+            document.querySelector('.auth-card').style.display = 'none';
+            document.querySelector('.footer').style.display = 'none';
+            document.getElementById('dash-container').style.display = 'block';
+        }
+        else {
+            console.log('No user logged in');
+            //show homepage and hide dashboard
+            document.querySelector('header').style.display = 'block';
+            document.querySelector('.auth-card').style.display = 'block';
+            document.querySelector('.footer').style.display = 'block';
+            document.getElementById('dash-container').style.display = 'none';
+        }
+
+        clearAuthForms();
+
+            document.querySelector('.auth-tab').forEach(tab => 
+                    tab.classList.remove('active'));
+            document.querySelector('[data-tab="login"]').classList.add('active');
+            document.querySelectorAll('.auth-form').forEach(form => 
+                    form.classList.remove('active'));
+            document.getElementById('login-form').classList.add('active');
+        }
+});
+
+// 
