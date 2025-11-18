@@ -590,6 +590,14 @@ function clearAuthForms(){
     hideSuccess();
 }
 
+function showHomePage(){
+    //show homepage and hide dashboard
+    document.querySelector('header').style.display = 'block';
+    document.querySelector('.auth-card').style.display = 'block';
+    document.querySelector('.footer').style.display = 'block';
+    document.getElementById('dash-container').style.display = 'none';
+}
+
 logoutButton.addEventListener('click', () => {
     logout();
 })
@@ -614,54 +622,55 @@ async function logout(){
 
         clearLocalStorage();
         updateLoadingMessage('Logged out successfully!');
+        clearAuthForms();
 
-        setTimeout(() => {hideLoading();}, 1000);
+        setTimeout(() => {
+            hideLoading();
+        }, 1000);
     }
     catch(error){
         hideLoading();
         console.log('Logout error :', error);
         clearLocalStorage();
+        window.location.href = '/';
     }
 }
 
 onAuthStateChanged(auth, async (user) => {
     if(user){
-        console.log('User is logged in');
+        console.log('User is logged in', user.uid);
 
-        const profileRef = dbRef(database, `Users/${user.uid}/Profile`);
-        const snapshot = await get(profileRef);
+        try{
+            const profileRef = dbRef(database, `Users/${user.uid}/Profile`);
+            const snapshot = await get(profileRef);
 
-        if(snapshot.exists()){
-            const data = snapshot.val();
+            if(snapshot.exists()){
+                console.log('User profile found in database');
 
-            profileName.textContent = data.username;
-            profileEmail.textContent = data.userEmail;
-            profileIcon.src = data.avatar;
+                // Extract profile data
+                const data = snapshot.val();
+                console.log('Profile data', data);
 
-            // show dashboard and hide login
-            document.querySelector('header').style.display = 'none';
-            document.querySelector('.auth-card').style.display = 'none';
-            document.querySelector('.footer').style.display = 'none';
-            document.getElementById('dash-container').style.display = 'block';
+                profileName.textContent = data.username;
+                profileEmail.textContent = data.userEmail;
+                profileIcon.src = data.avatar;
+
+                showDashboard();
+            }
+             else {
+                console.log('No user logged in . Force logout activated!');
+                await signOut(auth);
+                showHomePage();                
+            }
         }
-        else {
-            console.log('No user logged in');
-            //show homepage and hide dashboard
-            document.querySelector('header').style.display = 'block';
-            document.querySelector('.auth-card').style.display = 'block';
-            document.querySelector('.footer').style.display = 'block';
-            document.getElementById('dash-container').style.display = 'none';
+        catch(error){
+            console.log('error:', error);
+            
         }
-
-        clearAuthForms();
-
-            document.querySelector('.auth-tab').forEach(tab => 
-                    tab.classList.remove('active'));
-            document.querySelector('[data-tab="login"]').classList.add('active');
-            document.querySelectorAll('.auth-form').forEach(form => 
-                    form.classList.remove('active'));
-            document.getElementById('login-form').classList.add('active');
-        }
+    }
+    else {
+        clearLocalStorage();
+        showHomePage();
+    }
 });
 
-// 
